@@ -1,0 +1,25 @@
+% Math
+\usepackage{amsmath,amssymb}
+\usepackage{mathtools} % fix amsmath bugs + better typeset
+
+% Math - paired notations
+% Each commands
+% - has a * version that scales to the size of the content
+%   e.g. set*{x}
+% - an option to specify delimiter size
+%   e.g. set[\Big]{x}
+%   among: \big, \Big, \bigg, \Bigg
+
+\DeclarePairedDelimiter{\tuple}{\langle}{\rangle}
+
+\providecommand{\given{}}
+\newcommand*{\setgivenpart}[1][]{%
+    \nonscript\:#1\vert\allowbreak\nonscript\:\mathopen{}}
+\DeclarePairedDelimiterX{\set}[1]{\{}{\}}{%
+    \renewcommand\given{\setgivenpart[\delimsize]}#1}
+\DeclarePairedDelimiterX{\setopen}[1]{\{}{.}{%
+    \renewcommand\given{\setgivenpart[\delimsize]}#1}
+\DeclarePairedDelimiterX{\setclose}[1]{.}{\}}{%
+    \renewcommand\given{\setgivenpart[\delimsize]}#1}
+
+\newcommand*{\trm}[1]{\operatorname{\mathsf{#1}}} % custom math term

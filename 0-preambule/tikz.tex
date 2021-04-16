@@ -1,0 +1,100 @@
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta} % '-latex' arrow
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{fit} % fit attribute
+\usetikzlibrary{positioning}
+\usetikzlibrary{overlay-beamer-styles} % on <n>
+\usetikzlibrary{calc} % for calculation
+\usetikzlibrary{graphs}
+\usetikzlibrary{quotes} % shortcut for labels
+\usetikzlibrary{shapes.misc}
+
+\usetikzlibrary{3d}
+% https://tex.stackexchange.com/questions/48774/drawing-axis-grid-in-3d-with-custom-unit-vectors
+\makeatletter
+\tikzoption{canvas is xy plane at z}[]{%
+  \def\tikz@plane@origin{\pgfpointxyz{0}{0}{#1}}%
+  \def\tikz@plane@x{\pgfpointxyz{1}{0}{#1}}%
+  \def\tikz@plane@y{\pgfpointxyz{0}{1}{#1}}%
+  \tikz@canvas@is@plane%
+}
+\makeatother
+
+\tikzset{>=latex}
+
+\tikzset{
+    link/.style = {dotted,line width=0.5mm},
+    vis/.style = {-latex},
+}
+
+
+\tikzset{
+    doc/.pic={
+        \fill[scale=.1,fill=white,draw=gray,thick,solid] (0,0) -- (7,0) -- (7,8) -- (5,10) -- (0,10) -- cycle;
+    },
+    square/.pic={
+        \fill[sky,scale=.1] (0,0) rectangle (3,3);
+    },
+    circle/.pic={
+        \fill[scale=.05] (3,3) circle (3);
+    },
+    triangle/.pic={
+        \fill[scale=.05] (0,0) -- (6,0) -- (3,6) -- cycle;
+    },
+    trapeze/.pic={
+        \fill[scale=.05] (0,0) -- (6,1.5) -- (6,4.5) -- (0,6) -- cycle;
+    },
+}
+
+\tikzset{
+    compact/.style={inner sep=2,outer sep=1.85,rounded corners},
+}
+
+\tikzset{
+    disabled/.style={opacity=.3},
+    disabled on/.style={alt=#1{disabled}{}},
+    fillhighlight/.style={fill=hl},
+    fillhighlight on/.style={alt=#1{fillhighlight}{}},
+    invisible/.style={opacity=0,text opacity=0},
+    visible on/.style={alt={#1{}{invisible}}},
+    on/.style 2 args={alt=#1{#2}{}},
+}
+
+\tikzset{
+    stable/.style = {draw,rounded corners=0},
+    stable on/.style={alt=#1{stable}{}}
+}
+
+\newcommand\lettersize{7.6mm}
+\newcommand\biglettersize{8.7mm}
+\newcommand\widthblock{15.2mm}
+
+\tikzset{
+    username/.style={below, font=\scriptsize, text width={width ("Alice")}, align=center},
+    letter/.style={draw, minimum size=\lettersize, font=\ttfamily, node distance=\lettersize and \lettersize, on grid, label position=below},
+    bigletter/.style={letter, minimum size=\biglettersize, node distance=\biglettersize and \biglettersize},
+    block/.style={draw, minimum height=\lettersize, minimum width=\widthblock, node distance=\widthblock and \lettersize, on grid},
+    crossed/.style={
+        inner sep=.222em,
+        path picture={
+            \draw[red,thick] (path picture bounding box.west) -- (path picture bounding box.east);
+        }
+    }
+}
+
+% \newcommand{\ufcounter}[1]{
+%     % 1: maximum count
+%     \foreach[count=\counter] \i in {1,..., #1} {\only<\i|handeout:0>{\i}}
+% }
+
+% \newcommand{\ufcircledcounter}[2]{
+%     % 1: position, 2: maximum count
+%     \node[
+%             fill,
+%             circle,
+%             text=white,
+%             inner sep=1pt,
+%             font=\scriptsize
+%         ] at (#1) {\ufcounter{#2}};
+% }

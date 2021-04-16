@@ -1,0 +1,16 @@
+\usepackage{soul} % hl, st, ul
+\setstcolor{red}
+\sethlcolor{hl}
+
+\renewcommand<>{\hl}[1]{\only#2{\beameroriginal{\hl}}{#1}}
+\renewcommand<>{\so}[1]{\only#2{\beameroriginal{\so}}{#1}}
+\renewcommand<>{\st}[1]{\only#2{\beameroriginal{\st}}{#1}}
+\renewcommand<>{\ul}[1]{\only#2{\beameroriginal{\ul}}{#1}}
+
+% https://tex.stackexchange.com/questions/41683/why-is-it-that-coloring-in-soul-in-beamer-is-not-visible
+\makeatletter
+\newcommand\SoulColor{%
+  \let\set@color\beamerorig@set@color
+  \let\reset@color\beamerorig@reset@color}
+\makeatother
+\SoulColor

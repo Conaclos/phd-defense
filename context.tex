@@ -1,0 +1,264 @@
+
+% {
+% \usebackgroundtemplate{%
+%   \parbox[c][\paperheight][c]{\paperwidth}{\centering\includegraphics[width=0.9\paperwidth]{collab/world-map.pdf}}
+% }
+% \begin{frame}{Activités de collaboration}
+
+% \end{frame}
+% }
+
+
+\begin{frame}{Applications de collaboration}
+    \begin{minipage}[c][.55\textheight][t]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{collab/collab-activity.pdf}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactitemize}
+            \item plusieurs individus \textbf{modifient ensemble} un contenu
+            \begin{compactitemize}
+                \item localisés à des \textbf{endroits différents}
+                \item modifications en \textbf{simultané} ou à des \textbf{moments distincts}
+            \end{compactitemize}
+            \item \textbf{collaborations massives}
+            \begin{compactitemize}
+                \item met en lumière les limites des applications existantes
+            \end{compactitemize}
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+\begin{frame}{Infrastructure centralisée de collaboration}
+    \begin{minipage}[c][.55\textheight][t]{\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \newcommand*\sep{2.8}
+            % devices
+            \node[
+                label=below:{Serveur·s}
+            ](S){\includegraphics[scale=.5]{collab/cloud.pdf}};
+            \path (S)
+                +(30:\sep) node[
+                    "Alice" below,
+                ](A){\includegraphics[scale=.35]{collab/device.pdf}}
+                +(-30:\sep) node[
+                    "Bea" below,
+                ](B){\includegraphics[scale=.35]{collab/device.pdf}}
+                +(180:\sep) node[
+                    "Carol" below,
+                ](C){\includegraphics[scale=.35]{collab/device.pdf}};
+            % Links
+            \node(doc)[anchor=south,inner sep=.111em] at (S.north){
+                \tikz[scale=.05]{
+                    \pic {doc};
+                    \pic<2->[fill=sky] at (1,13) {square};
+                    \pic<2->[fill=olive] at (7,8) {circle};
+                }
+            };
+            \only<1>{
+                \graph[edges={link}]{
+                    {(A.west), (B.west)} -> (S),
+                    (C) -- (S)
+                };
+                \path (A.west) -- node[pos=.33]{
+                    \tikz\pic[fill=sky]{square};
+                } (S);
+                \path (B.west) -- node[pos=.33]{
+                    \tikz\pic[fill=olive]{circle};
+                } (S);
+            }
+            \only<2>{
+                \node{\includegraphics[scale=.4]{collab/sync.pdf}};
+                \graph[edges={link}]{
+                    {(A.west), (B.west), (C)} -- (S)
+                };
+            }
+            \only<3>{
+                \graph[
+                    edges={link},
+                    edge node={
+                        node{
+                            \tikz[scale=.05]{
+                                \pic {doc};
+                                \pic[fill=sky] at (1,13) {square};
+                                \pic[fill=olive] at (7,8) {circle};
+                            }
+                        }
+                    },
+                ]{
+                    (S) -> {(A.west), (B.west), (C)}
+                };
+            }
+            \only<4>{ % availability
+                \node{\color{invalid} \xmark};
+            }
+            \only<5>{ % content property
+                \draw[invalid,very thick] (doc.north west) -- (doc.south east);
+                \graph[edges={link}]{
+                    {(A.west), (B.west), (C)} -- (S)
+                };
+            }
+            \only<6>{ % scalability
+                \node[anchor=south] at (S.base){
+                    \includegraphics[scale=.12]{collab/fire.pdf}
+                };
+                \path (S)
+                    +(150:\sep) node(D){\includegraphics[scale=.35]{collab/device.pdf}}
+                ;
+                \graph[edges={link}]{
+                    {[
+                        edge node={
+                            node[pos=.33]{
+                                \tikz\pic[fill=sky]{square};
+                            }
+                        }
+                    ](A.west) -> (S)},
+                    {[
+                        edge node={
+                            node[pos=.33]{
+                                \tikz\pic[fill=olive]{circle};
+                            }
+                        }
+                    ](B.west) -> (S)},
+                    {[
+                        edge node={
+                            node[pos=.33]{
+                                \tikz\pic[fill=pinky]{triangle};
+                            }
+                        }
+                    ](C) -> (S)},
+                    {[
+                        edge node={
+                            node[pos=.33]{
+                                \tikz\pic[fill=gold]{trapeze};
+                            }
+                        }
+                    ](D.east) -> (S)},
+                };
+            }
+            \only<7>{ % security & privacy
+                \node{\includegraphics[scale=.2]{collab/eye.pdf}};
+                \graph[edges={link}]{
+                    {(A.west), (B.west), (C)} -- (S)
+                };
+            }
+            \only<8>{ % offline
+                \graph[edges={link}]{
+                    (S) -- {(A.west), (B.west)}
+                };
+                \node[anchor=base] at (C.north){
+                    \includegraphics[scale=.02]{collab/nowifi.pdf}
+                };
+            }
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}[c][4ex][t]{\textwidth}
+        {\color{pumpkin} \textbf{Limites}}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{minipage}{.38\textwidth}
+            \begin{compactitemize}
+                \item disponibilité
+                \item latence
+                \item sécurité et vie privée
+            \end{compactitemize}
+        \end{minipage}
+        \begin{minipage}{.58\textwidth}
+            \begin{compactitemize}
+                \item propriété des contenus
+                \item passage à l'échelle
+                \item modes de collaboration (hors ligne)
+            \end{compactitemize}
+        \end{minipage}
+    \end{minipage}
+\end{frame}
+
+\begin{frame}{Infrastructures pair-à-pair de collaboration}
+    \begin{minipage}[c][.55\textheight][t]{\textwidth}
+        \centering
+        \begin{tikzpicture}
+                \newcommand*\sep{1.5}
+                \newcommand*\ang{80}
+                % devices
+                \path (0,0)
+                +(\ang:\sep) node[
+                    "Alice",
+                    label=right:{%
+                        \tikz[scale=.05]{
+                            \pic {doc};
+                            \pic[fill=sky] at (1,13) {square};
+                            \pic<3- |handout:0>[fill=olive] at (7,8) {circle};
+                            \pic<4- |handout:0>[fill=pinky] at (7,1) {triangle};
+                        }
+                    },
+                ](A){\includegraphics[scale=.35]{collab/device.pdf}}
+                +(\ang-120:\sep) node[
+                    "Bea" below,
+                    label=right:{%
+                        \tikz[scale=.05]{
+                            \pic {doc};
+                            \pic<3- |handout:0>[fill=sky] at (1,13) {square};
+                            \pic[fill=olive] at (7,8) {circle};
+                            \pic<4- |handout:0>[fill=pinky] at (7,1) {triangle};
+                        }
+                    },
+                ](B){\includegraphics[scale=.35]{collab/device.pdf}}
+                +(\ang+120:\sep) node[
+                    "Carol" below,
+                    label=left:{%
+                        \tikz[scale=.05]{
+                            \pic {doc};
+                            \pic<4- |handout:0>[fill=sky] at (1,13) {square};
+                            \pic<4- |handout:0>[fill=olive] at (7,8) {circle};
+                            \pic[fill=pinky] at (7,1) {triangle};
+                        }
+                    },
+                ](C){\includegraphics[scale=.35]{collab/device.pdf}}
+            ;
+            % Links
+            \draw[link] (A) -- node[midway]{\includegraphics<2 | handout:0>[scale=.4]{collab/sync.pdf}} (B);
+            \draw<3- | handout:0>[link] (B) -- node[midway]{\includegraphics<3 | handout:0>[scale=.4]{collab/sync.pdf}} (C);
+            \draw<3- | handout:0>[link] (C) -- node[midway]{\includegraphics<3 | handout:0>[scale=.4]{collab/sync.pdf}} (A);
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactitemize}
+            %\item les pairs exécutent des \textbf{operations} pour modifier le contenu
+            \item les pairs possèdent leur \textbf{propre copie} du contenu
+            \begin{compactitemize}
+                \item modifiable à \textbf{tout moment} et \textbf{sans coordination}
+                \item \textbf{convergence à terme}
+            \end{compactitemize}
+            \item la convergence des copies est une propriété essentielle
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+
+% \begin{frame}{Problématiques}
+%     \begin{minipage}[c][.6\textheight][t]{\textwidth}
+%         \centering
+%         \includegraphics[scale=.1]{fig/materials/p2p.pdf}
+%     \end{minipage}
+%     \begin{minipage}{\textwidth}
+%         \begin{compactitemize}
+%             \item les pairs ont plus de responsabilités
+%             \begin{compactitemize}
+%                 \item ils peuvent plus facilement nuire à la collaboration
+%             \end{compactitemize}
+%             \item participation d'un plus grand nombre de collaborateur·ice·s
+%             \begin{compactitemize}
+%                 \item produit de nouveaux obstacles de passage à l'échelle
+%             \end{compactitemize}
+%         \end{compactitemize}
+%     \end{minipage}
+% \end{frame}
+
+
+\begin{frame}[plain,standout]
+    Problématique 1~: peut-on\\assurer la convergence des copies\\ en présence de pairs malintentionnés~?\\
+    \vspace{2em}
+    Problématique 2~:\\peut-on concevoir un protocole pour la co-édition de texte qui résiste mieux aux aléas du réseau et aux longues périodes de déconnexion~?\\
+\end{frame}
+

@@ -1,0 +1,150 @@
+% Copyright (c) 2018 Victorien Elvinger
+% Code licensed under GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html).
+% Content licensed under CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
+
+\documentclass[xcolor=table,t,french]{beamer}
+% t: vertical flush of every frame (local override possible)
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+
+% Theme
+% -----------
+\usetheme[
+    sectionpage=simple,
+    numbering=fraction
+]{metropolis}
+\setbeamertemplate{title page}[default]
+\setbeamercolor{palette primary}{bg=black!80}
+\setbeamerfont{footnote}{size=\scriptsize}
+\setbeamersize{text margin left=4.4ex, text margin right=4.4ex}
+
+% Prelude
+% -----------
+\input{0-preambule/acronyms.tex}
+\input{0-preambule/biblio.tex}
+\input{0-preambule/block.tex}
+\input{0-preambule/color.tex}
+\input{0-preambule/figure.tex}
+\input{0-preambule/hyperref.tex}
+\input{0-preambule/list.tex}
+\input{0-preambule/math.tex}
+\input{0-preambule/symbol.tex}
+\input{0-preambule/tikz.tex}
+\input{0-preambule/textdeco.tex}
+
+%\input{0-preambule/grid.tex}
+
+\usepackage[scale=1.5]{ccicons}
+\usepackage{transparent}
+
+\usepackage{silence}
+\WarningFilter{biblatex}{Patching footnotes failed}
+    % Filter warning of biblatex package: "Patching footnotes failed"
+
+\usepackage{appendixnumberbeamer}
+
+
+% Meta-data
+% ---------
+
+\author{Victorien Elvinger}
+\title{Réplication sécurisée dans les infrastructures pair-à-pair de collaboration}
+\institute{%
+    \includegraphics[height=1.6em]{/logo/loria.pdf}\hspace{1.6em}%
+    \includegraphics[height=1.6em]{/logo/ul.pdf}\hspace{1.6em}%
+    \includegraphics[height=1.6em]{/logo/cnrs.pdf}\hspace{1.6em}%
+    \includegraphics[height=1.6em]{/logo/inria.pdf}\hspace{1.6em}%
+    %\newline Supervisé par Dr. Gérald Oster et Prof. François Charoy%
+}
+\date{Juin 2021}
+
+
+% Content
+% -------
+\includeonly{
+    context,
+    problematic-1,
+    problematic-2,
+    conclusion,
+    backup,
+}
+
+\begin{document}
+
+{ % Title page
+    \metroset{numbering=none}
+    \begin{frame}[c]
+        \maketitle
+        \center{
+            \footnotesize%
+            \begin{tabular}{rl}
+                Membres du jury~: &\\
+                Steve Kremer & directeur de recherche Inria Grand Est\\
+                Emmanuelle Anceaume & directrice de recherche IRISA\\
+                Pascal Molli & professeur à l'Université de Nantes\\
+                Esther Pacitti & professeure à l'Université de Montpellier 2\\
+                François Charoy & professeur à l'Université de Lorraine\\
+                Gérald Oster & maître de conférence à l'Université de Lorraine\\
+            \end{tabular}
+        }
+    \end{frame}
+}
+
+\include{context}
+
+{ % Problematic 1
+    % \setbeamercolor{palette primary}{
+    %     bg=dirt
+    % }
+    \include{problematic-1}
+}
+
+{ % Problematic 2
+    % \setbeamercolor{palette primary}{
+    %     bg=gold
+    % }
+    \include{problematic-2}
+}
+
+\include{conclusion}
+
+\appendix
+
+% \begin{frame}{Remerciements}
+%     François Charoy\\
+%     Claudia Lavinia-Ignat\\
+%     Matthieu Nicolas\\
+%     Gérald Oster
+% \end{frame}
+
+{
+\usebackgroundtemplate{%
+  \parbox[c][0.85\paperheight][c]{\paperwidth}{\transparent{.4}\centering\includegraphics[width=0.9\textwidth]{fig/materials/p2p.pdf}\transparent{0}}
+}
+\begin{frame}
+    \vspace{0.85\textheight}
+    \center{\ccby\hspace{3pt}4.0}
+\end{frame}
+}
+
+\begin{frame}{Publications}
+    \textbf{Prunable Authenticated Log and Authenticable Snapshot in Distributed Collaborative Systems} in proceedings of the 4th {IEEE} International Conference on Collaboration and Internet Computing, ({CIC} 2018) -- Victorien Elvinger, Gérald Oster, François Charoy
+
+    \textbf{MUTE\@: A Peer-to-Peer Web-based Real-time Collaborative Editor} in proceedings of the 15th European Conference on Computer Supported Cooperative Work ({ECSCW} 2017) -- Matthieu Nicolas, Victorien Elvinger, Gérald Oster, Claudia-Lavinia Ignat,
+    François Charoy
+
+    \textbf{A Generic Undo Support for State-Based CRDTs} in proceedings of the 23rd International Conference on Principles of Distributed Systems -- Weihai Yu, Victorien Elvinger, Claudia-Lavinia Ignat
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+    \vspace{1em}
+    \printbibliography%
+\end{frame}
+
+% Backup slides
+% -------------
+
+\include{backup}
+
+\end{document}

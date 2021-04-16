@@ -1,0 +1,922 @@
+
+\begin{frame}[plain,standout]
+    Problématique 2~:\\peut-on concevoir un protocole pour la co-édition de texte qui résiste mieux aux aléas du réseau et aux longues périodes de déconnexion~?\\
+    \vspace{2em}
+    \begin{tikzpicture}[x=1.24cm]
+        \node at (-1,0) {\includegraphics[scale=1]{collab/writer.pdf}};
+        \node[xscale=-1] at (1,0) {\includegraphics[scale=1]{collab/writer.pdf}};
+    \end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}{Édition collaborative de texte}
+    \begin{minipage}[c][.55\textheight][t]{\textwidth}
+        \begin{tikzpicture}[x=\textwidth,y=1.2cm]
+            \node(A)[
+                anchor=north west,
+                "Alice" {username,above},
+                text width=7*\lettersize,
+                label={[align=left,text width=3cm]below:
+                    {
+                        \only<2->{\\$\trm{ins}(3,i)$}
+                        \only<3->{\\$\trm{del}(5)$}
+                        \only<4->{\\$\trm{ins}(4,e)$}
+                        \only<4->{\\$\trm{ins}(5,s)$}
+                        \only<5->{\\$\trm{ins}(4,!)$}
+                    }
+                }
+            ] {\begin{tikzpicture}[
+                graphs/every graph/.style={
+                    nodes={letter},
+                    edges={draw=none},
+                    grow right=\lettersize
+                }
+            ]
+                \only<1>{
+                    \graph{
+                        l -- a -- d -- y
+                    };
+                }
+                \only<2>{
+                    \graph{
+                        l -- a -- d -- i[fillhighlight] -- y
+                    };
+                }
+                \only<3>{
+                    \graph{
+                        l -- a -- d -- i -- y[as={\st{y}}]
+                    };
+                }
+                \only<4>{
+                    \graph{
+                        l -- a -- d -- i -- e[fillhighlight] -- s[fillhighlight]
+                    };
+                }
+                \only<5>{
+                    \graph{
+                        l -- a -- d -- i -- ![fillhighlight] -- e -- s
+                    };
+                }
+            \end{tikzpicture}};
+
+            \node(B) at (1,0)[
+                anchor=north east,
+                "Bea" {username,above},
+                text width=7*\lettersize,
+                label={[align=left,text width=3cm]below:
+                    {
+                        \only<4->{\\$\trm{ins}(4,!)$}
+                        \only<5->{
+                            \\$\trm{ins}(3,i)$
+                            \\$\trm{del}(5)$
+                            \\$\trm{ins}(4,e)$
+                            \\$\trm{ins}(5,s)$
+                        }
+                    }
+                }
+            ] {\begin{tikzpicture}[
+                graphs/every graph/.style={
+                    nodes={letter},
+                    edges={draw=none},
+                    grow right=\lettersize
+                }
+            ]
+                \only<1-3>{
+                    \graph{
+                        l -- a -- d -- y
+                    };
+                }
+                \only<4>{
+                    \graph{
+                        l -- a -- d -- y -- ![fillhighlight]
+                    };
+                }
+                \only<5>{
+                    \graph{
+                        l -- a -- d -- i[fillhighlight] -- e[fillhighlight] -- s[fillhighlight] -- !
+                    };
+                }
+            \end{tikzpicture}};
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactitemize}
+            \item document = \textbf{séquence} de caractères
+            \begin{compactitemize}
+                \item $\trm{ins}(c,n)$~: insertion d'un caractère $c$ après le $n$-ième caractère
+                \item $\trm{del}(n)$~: suppression du $n$-ième caractère
+            \end{compactitemize}
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Types de données répliquées}
+    \begin{minipage}[c][.55\textheight][t]{\textwidth}
+        \begin{tikzpicture}[x=\textwidth,y=1.2cm]
+            \node(A)[
+                anchor=north west,
+                "Alice" {username,above},
+                text width=7*\lettersize,
+                label={[align=left,text width=3cm]below:
+                    {
+                        \\$\trm{ins}(3,i)$
+                        \\$\trm{del}(5)$
+                        \\$\trm{ins}(4,e)$
+                        \\$\trm{ins}(5,s)$
+                        \only<2>{\\message de Bea}
+                    }
+                }
+            ] {\begin{tikzpicture}[
+                graphs/every graph/.style={
+                    nodes={letter},
+                    edges={draw=none},
+                    grow right=\lettersize
+                }
+            ]
+                \only<1>{
+                    \graph{
+                        l -- a -- d -- i -- e -- s
+                    };
+                }
+                \only<2>{
+                    \graph{
+                        l -- a -- d -- i  -- e -- s -- ![fillhighlight]
+                    };
+                }
+            \end{tikzpicture}};
+
+            \node(B) at (1,0)[
+                anchor=north east,
+                "Bea" {username,above},
+                text width=7*\lettersize,
+                label={[align=left,text width=3cm]below:
+                    {
+                        \\$\trm{ins}(4,!)$
+                        \only<2>{\\message·s de Alice}
+                    }
+                }
+            ] {\begin{tikzpicture}[
+                graphs/every graph/.style={
+                    nodes={letter},
+                    edges={draw=none},
+                    grow right=\lettersize
+                }
+            ]
+                \only<1>{
+                    \graph{
+                        l -- a -- d -- y -- !
+                    };
+                }
+                \only<2>{
+                    \graph{
+                        l -- a -- d -- i[fillhighlight] -- e[fillhighlight] -- s[fillhighlight] -- !
+                    };
+                }
+            \end{tikzpicture}};
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactitemize}
+            \item Conflict-free Replicated Data Types (CRDTs)
+            \item l'exécution d'une opération génère un \textbf{message de synchronisation}
+            \item les messages générés par des \textbf{opérations concurrentes} peuvent être \textbf{intégrés dans un ordre quelconque}
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Synchronisation par opérations (1)}
+    \begin{minipage}[c][.55\textheight][t]{\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \newcommand*\sep{1.5}
+            \newcommand*\ang{80}
+            % devices
+            \node(A) at (\ang:\sep)[
+                "Alice",
+                label=right:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        \pic[fill=sky] at (1,13) {square};
+                        % \pic[fill=olive] at (7,8) {circle};
+                        % \pic[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+                label={[shift={(1,0)},visible on=<2>]right:{
+                    \color{invalid} \xmark
+                }},
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            \node(B) at (\ang-120:\sep)[
+                "Bea" below,
+                label=right:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        %\pic[fill=sky] at (1,13) {square};
+                        \pic[fill=olive] at (7,8) {circle};
+                        \pic<2 | handout:0>[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+                label={[shift={(1,0)},visible on=<2>]right:{
+                    \color{valid} \checkmark
+                }},
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            \node(C) at (\ang+120:\sep)[
+                "Carol" below,
+                label=left:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        %\pic[fill=sky] at (1,13) {square};
+                        \pic[fill=olive] at (7,8) {circle};
+                        \pic[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            % Links
+            \draw[link] (A) -- (B);
+            \draw<1>[link,->] (C) -> node[midway]{\tikz\pic[fill=pinky]{triangle};} (A);
+            \draw<1>[link,->] (C) -> node[midway]{\tikz\pic[fill=pinky]{triangle};} (B);
+            \draw<2>[link] (C) -> (A);
+            \draw<2>[link] (C) -> (B);
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactenumerate}
+            \item un message est intégré \textbf{exactement une fois}
+            \item ordre spécifique d'intégration de certains messages
+            \begin{compactitemize}
+                \item l'\textbf{insertion} d'une valeur est intégrée \textbf{avant sa suppression}
+            \end{compactitemize}
+            \item \textbf{intégration causale} des messages (implique 2.)
+        \end{compactenumerate}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Synchronisation par opérations (2)}
+    \begin{minipage}[c][.55\textheight][t]{\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \newcommand*\sep{1.5}
+            \newcommand*\ang{80}
+            % devices
+            \node(A) at (\ang:\sep)[
+                "Alice",
+                label=right:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        \pic[fill=sky] at (1,13) {square};
+                        \pic[fill=olive] at (7,8) {circle};
+                        \pic[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            \node(B) at (\ang-120:\sep)[
+                "Bea" below,
+                label=right:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        \pic[fill=sky] at (1,13) {square};
+                        \pic[fill=olive] at (7,8) {circle};
+                        \pic[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            \node(C) at (\ang+120:\sep)[
+                "Carol" below,
+                label=left:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        \pic[fill=sky] at (1,13) {square};
+                        \pic[fill=olive] at (7,8) {circle};
+                        \pic[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            \coordinate(Dp) at (\ang+60:3*\sep);
+            \node(D) at (Dp |- A) [
+                "Diane",
+                label=left:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        \pic<2->[fill=sky] at (1,13) {square};
+                        \pic<2->[fill=olive] at (7,8) {circle};
+                        \pic<2->[fill=pinky] at (7,1) {triangle};
+                        \pic[fill=gold] at (1,1) {trapeze};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            % Links
+            \draw[link] (A) -- (B);
+            \draw[link] (C) -- (A);
+            \draw[link] (C) -> (B);
+            \draw<1>[link,->] (C) ->
+                node[pos=.75]{\tikz\pic[fill=sky]{square};}
+                node[pos=.5]{\tikz\pic[fill=olive]{circle};}
+                node[pos=.3]{\tikz\pic[fill=pinky]{triangle};}
+                (D);
+            \draw<2>[link] (C) -> (D);
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactitemize}
+            \item[\color{valid} \textbf{\texttt{+}}] messages de petite taille
+            \item[\color{invalid} \textbf{\texttt{-}}] exige une dissémination fiable des message
+            \item[\color{invalid} \textbf{\texttt{-}}] la perte d'un message peut \textbf{propager des ralentissements}
+            \item[\color{invalid} \textbf{\texttt{-}}] coût en communication et en calcul élevé
+            \begin{compactitemize}
+                \item après une \textbf{longue période de déconnexion}
+            \end{compactitemize}
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Synchronisation par états (1)}
+    \begin{minipage}[c][.55\textheight][t]{\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \newcommand*\sep{1.5}
+            \newcommand*\ang{80}
+            % devices
+            \node(A) at (\ang:\sep)[
+                "Alice",
+                label=right:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        \pic[fill=sky] at (1,13) {square};
+                        \pic<2 | handout:0>[fill=olive] at (7,8) {circle};
+                        \pic<2 | handout:0>[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            \node(B) at (\ang-120:\sep)[
+                "Bea" below,
+                label=right:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        %\pic[fill=sky] at (1,13) {square};
+                        \pic[fill=olive] at (7,8) {circle};
+                        \pic<2 | handout:0>[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            \node(C) at (\ang+120:\sep)[
+                "Carol" below,
+                label=left:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        %\pic[fill=sky] at (1,13) {square};
+                        \pic[fill=olive] at (7,8) {circle};
+                        \pic[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            % Links
+            \draw[link] (A) -- (B);
+            \draw<1>[link,->] (C) -> node[midway]{\tikz[scale=.05]{
+                \pic {doc};
+                %\pic[fill=sky] at (1,13) {square};
+                \pic[fill=olive] at (7,8) {circle};
+                \pic[fill=pinky] at (7,1) {triangle};
+            }} (A);
+            \draw<1>[link,->] (C) -> node[midway]{\tikz[scale=.05]{
+                \pic {doc};
+                %\pic[fill=sky] at (1,13) {square};
+                \pic[fill=olive] at (7,8) {circle};
+                \pic[fill=pinky] at (7,1) {triangle};
+            }} (B);
+            \draw<2>[link] (C) -> (A);
+            \draw<2>[link] (C) -> (B);
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactitemize}
+            \item les pairs \textbf{transmettent} directement l'\textbf{état mis à jour}
+            \item ils \textbf{fusionnent} leur état actuel avec les états reçus
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Synchronisation par états (2)}
+    \begin{minipage}[c][.7\textheight][t]{\textwidth}
+        \centering
+        \begin{tikzpicture}[
+            x={(.75cm,.5cm)}, y={(-.75cm,.5cm)}, z={(0cm,.55cm)},
+            scale=3,
+            every node/.style={inner sep=.222em},
+        ]
+            \newcommand\doc{\tikz[scale=.05,x=1cm,y=1cm]{\pic{doc};}}
+            \newcommand\docA{\tikz[scale=.05,x=1cm,y=1cm]{\pic{doc};\pic[fill=sky] at (1,13) {square};}}
+            \newcommand\docB{\tikz[scale=.05,x=1cm,y=1cm]{\pic {doc};\pic[fill=olive] at (7,8) {circle};}}
+            \newcommand\docC{\tikz[scale=.05,x=1cm,y=1cm]{\pic{doc};\pic[fill=pinky] at (7,1) {triangle};}}
+            \newcommand\docAB{\tikz[scale=.05,x=1cm,y=1cm]{\pic{doc};\pic[fill=sky] at (1,13) {square};\pic[fill=olive] at (7,8) {circle};}}
+            \newcommand\docAC{\tikz[scale=.05,x=1cm,y=1cm]{\pic{doc};\pic[fill=sky] at (1,13) {square};\pic[fill=pinky] at (7,1) {triangle};}}
+            \newcommand\docBC{\tikz[scale=.05,x=1cm,y=1cm]{\pic{doc};\pic[fill=olive] at (7,8) {circle};\pic[fill=pinky] at (7,1) {triangle};}}
+            \newcommand\docABC{\tikz[scale=.05,x=1cm,y=1cm]{\pic{doc};\pic[fill=sky] at (1,13) {square};\pic[fill=olive] at (7,8) {circle};\pic[fill=pinky] at (7,1) {triangle};}}
+
+            \node(000) at (0,0,0){\doc};
+            \node(100) at (1,0,0)[fillhighlight on=<1>]{\docC};
+            \node(010) at (0,1,0){\docA};
+            \node(001) at (0,0,1)[fillhighlight on=<{1,3}>]{\docB};
+            \node(011) at (0,1,1){\docAB};
+            \node(101) at (1,0,1)[fillhighlight on=<2-4>]{\docBC};
+            \node(110) at (1,1,0){\docAC};
+            \node(111) at (1,1,1){\docABC};
+            \graph[edges={opacity=.7}]{
+                (100) ->[opacity=.4] (110),
+                (010) ->[opacity=.4] (110),
+                (110) ->[opacity=.4] (111),
+                (000) -> (100),
+                (000) -> (010),
+                (000) -> (001),
+                (100) ->[on={<1>}{very thick,opacity=1}] (101),
+                (010) -> (011),
+                (001) ->[on={<{1,3}>}{very thick,opacity=1}] (101),
+                (001) -> (011),
+                (101) -> (111),
+                (011) -> (111),
+            };
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactitemize}
+            \item l'ensemble des états forme un \textbf{sup demi-treillis}
+            \begin{compactitemize}
+                \item fusion de 2 états donne le plus petit état qui leur est $\geq$
+                \item fusion~: commutative, associative, idempotente
+            \end{compactitemize}
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Synchronisation par états (3)}
+    \begin{minipage}[c][.55\textheight][t]{\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \newcommand*\sep{1.5}
+            \newcommand*\ang{80}
+            % devices
+            \node(A) at (\ang:\sep)[
+                "Alice",
+                label=right:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        \pic[fill=sky] at (1,13) {square};
+                        \pic<5 | handout:0>[fill=olive] at (7,8) {circle};
+                        \pic<5 | handout:0>[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            \node(B) at (\ang-120:\sep)[
+                "Bea" below,
+                label=right:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        %\pic[fill=sky] at (1,13) {square};
+                        \pic[fill=olive] at (7,8) {circle};
+                        \pic<5 | handout:0>[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            \node(C) at (\ang+120:\sep)[
+                "Carol" below,
+                label=left:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        %\pic[fill=sky] at (1,13) {square};
+                        \pic<2->[fill=olive] at (7,8) {circle};
+                        \pic<3->[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            % Links
+            \draw<1-5>[link] (A) -- node[midway]{\color{invalid} \xmark} (B);
+            \draw<4>[link,->] (C) -> node[midway]{\tikz[scale=.05]{
+                \pic {doc};
+                %\pic[fill=sky] at (1,13) {square};
+                \pic[fill=olive] at (7,8) {circle};
+                \pic[fill=pinky] at (7,1) {triangle};
+            }} (A);
+            \draw<1>[link,->] (B) -> node[midway]{\tikz[scale=.05]{
+                \pic {doc};
+                \pic[fill=olive] at (7,8) {circle};
+            }} (C);
+            \draw<4>[link,->] (C) -> node[midway]{\tikz[scale=.05]{
+                \pic {doc};
+                %\pic[fill=sky] at (1,13) {square};
+                \pic[fill=olive] at (7,8) {circle};
+                \pic[fill=pinky] at (7,1) {triangle};
+            }} (B);
+            \draw<1-3,5>[link] (C) -> (A);
+            \draw<2-3,5>[link] (C) -> (B);
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactitemize}
+            \item[\color{valid} \textbf{\texttt{+}}] \textbf{résiste aux aléas du réseau}
+            \begin{compactitemize}
+                \item tolère perte, duplication, et réordonnement des messages
+            \end{compactitemize}
+            \item[\color{invalid} \textbf{\texttt{-}}] adapté aux \textbf{CRDTs avec une faible occupation mémoire}
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Synchronisation par différences (d'états)}
+    \begin{minipage}[c][.55\textheight][t]{\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \newcommand*\sep{1.5}
+            \newcommand*\ang{80}
+            % devices
+            \node(A) at (\ang:\sep)[
+                "Alice",
+                label=right:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        \pic[fill=sky] at (1,13) {square};
+                        \pic<2 | handout:0>[fill=olive] at (7,8) {circle};
+                        \pic<2 | handout:0>[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            \node(B) at (\ang-120:\sep)[
+                "Bea" below,
+                label=right:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        %\pic[fill=sky] at (1,13) {square};
+                        \pic[fill=olive] at (7,8) {circle};
+                        \pic<2 | handout:0>[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            \node(C) at (\ang+120:\sep)[
+                "Carol" below,
+                label=left:{%
+                    \tikz[scale=.05]{
+                        \pic {doc};
+                        %\pic[fill=sky] at (1,13) {square};
+                        \pic[fill=olive] at (7,8) {circle};
+                        \pic[fill=pinky] at (7,1) {triangle};
+                    }
+                },
+            ]{\includegraphics[scale=.35]{collab/device.pdf}};
+            % Links
+            \draw[link] (A) -- (B);
+            \draw<1>[link,->] (C) -> node[midway]{\tikz[scale=.05]{
+                \pic {doc};
+                \pic[fill=olive] at (7,8) {circle};
+                \pic[fill=pinky] at (7,1) {triangle};
+            }} (A);
+            \draw<1>[link,->] (C) -> node[midway]{\tikz[scale=.05]{
+                \pic {doc};
+                \pic[fill=pinky] at (7,1) {triangle};
+            }} (B);
+            \draw<2>[link] (C) -> (A);
+            \draw<2>[link] (C) -> (B);
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactitemize}
+            \item un état est \textbf{décomposable en états irréductibles}
+            \item différence entre l'état initial et l'état mis à jour
+            \item[\color{valid} \textbf{\texttt{+}}] flexibilité pour la synchronisation
+            \begin{compactitemize}
+                \item synchronisation par états
+                \item \textbf{synchronisation par états partiels} (différences d'états)
+            \end{compactitemize}
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Logoot\footcite{weiss_2009_logoot}}
+    \begin{minipage}[c][.33\textheight][t]{\textwidth}
+        \begin{tikzpicture}[x=\textwidth]
+            \node(A)[
+                anchor=north west,
+                "Alice" {username,above},
+                text width=7*\lettersize,
+            ] {\begin{tikzpicture}[
+                graphs/every graph/.style={
+                    nodes={letter},
+                    edges={draw=none},
+                    grow right=\lettersize
+                },
+            ]
+                \only<1>{
+                    \graph{
+                        l -- a -- d -- y
+                    };
+                }
+                \only<2>{
+                    \graph{
+                        l -- a -- d -- i[fillhighlight] -- y
+                    };
+                }
+                \only<3>{
+                    \graph{
+                        l -- a -- d -- i -- e[fillhighlight] -- s[fillhighlight]
+                    };
+                }
+                \only<4->{
+                    \graph{
+                        l -- a -- d -- i  -- e -- s -- ![fillhighlight]
+                    };
+                }
+                \only<1-4>{
+                    \node also["$f$" below] (l);
+                    \node also["$h$" below] (a);
+                    \node also["$l$" below] (d);
+                    \node<-2> also["$m$" below] (y);
+                    \node<2-> also["$lq$" below] (i);
+                    \node<3-> also["$p$" below] (e);
+                    \node<3-> also["$r$" below] (s);
+                    \node<4-> also["$t$" below] (!);
+                }
+                \only<5>{
+                    \node also["$f^{A1}$" below] (l);
+                    \node also["$h^{A2}$" below] (a);
+                    \node also["$l^{A3}$" below] (d);
+                    %\node also["$m^{A4}$" below] (y);
+                    \node also["$lq^{A5}$" below] (i);
+                    \node also["$p^{A6}$" below] (e);
+                    \node also["$r^{A7}$" below] (s);
+                    \node also["$t^{B1}$" below] (!);
+                }
+            \end{tikzpicture}};
+
+            \node(B) at (1,0)[
+                anchor=north east,
+                "Bea" {username,above},
+                text width=7*\lettersize,
+            ] {\begin{tikzpicture}[
+                graphs/every graph/.style={
+                    nodes={letter},
+                    edges={draw=none},
+                    grow right=\lettersize
+                }
+            ]
+                \only<1-2>{
+                    \graph{
+                        l -- a -- d -- y
+                    };
+                }
+                \only<3>{
+                    \graph{
+                        l -- a -- d -- y -- ![fillhighlight]
+                    };
+                }
+                \only<4->{
+                    \graph{
+                        l -- a -- d -- i[fillhighlight] -- e[fillhighlight] -- s[fillhighlight] -- !
+                    };
+                }
+                \only<1-4>{
+                    \node also["$f$" below] (l);
+                    \node also["$h$" below] (a);
+                    \node also["$l$" below] (d);
+                    \node<-3> also["$m$" below] (y);
+                    \node<4-> also["$lq$" below] (i);
+                    \node<4-> also["$p$" below] (e);
+                    \node<4-> also["$r$" below] (s);
+                    \node<3-> also["$t$" below] (!);
+                }
+                \only<5>{
+                    \node also["$f^{A1}$" below] (l);
+                    \node also["$h^{A2}$" below] (a);
+                    \node also["$l^{A3}$" below] (d);
+                    %\node also["$m^{A4}$" below] (y);
+                    \node also["$lq^{A5}$" below] (i);
+                    \node also["$p^{A6}$" below] (e);
+                    \node also["$r^{A7}$" below] (s);
+                    \node also["$t^{B1}$" below] (!);
+                }
+            \end{tikzpicture}};
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactitemize}
+            \item chaque caractère à une \textbf{position unique} et immuable
+            \item \textbf{ordre total et dense entre les positions}
+            \begin{compactitemize}
+                \item une position peut toujours être générée entre deux autres
+            \end{compactitemize}
+            \item chaque caractère à un \textbf{identifiant unique} (\emph{dot})
+            \begin{compactitemize}
+                \item identifiant du pair qui l'a inséré
+                \item entier incrémenté avant chaque insertion du pair
+            \end{compactitemize}
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Contribution~: Logoot synchronisé par différences}
+    \begin{minipage}[c][.55\textheight][t]{\textwidth}
+        \begin{tikzpicture}[x=\textwidth,y=-2cm]
+            \node(ladiy!) at (.5,0) {\begin{tikzpicture}[every node/.style={bigletter},every label quotes/.style={below,align=center}]
+                \node(l){l};
+                \node(a)[right of=l]{a};
+                \node(d)[right of=a]{d};
+                \node(i)[fillhighlight, right of=d]{i};
+                \node(y)[right of=i]{y};
+                \node(!)[fillhighlight, right of=y]{!};
+                \node also["$f^{A1}$"] (l);
+                \node also["$h^{A2}$"] (a);
+                \node also["$l^{A3}$"] (d);
+                \node also["$lq^{A5}$"] (i);
+                \node also["$m^{A4}$"] (y);
+                \node also["$t^{B1}$"] (!);
+            \end{tikzpicture}};
+
+            \node(ladiy)[anchor=west] at (0,1) {\begin{tikzpicture}[every node/.style={bigletter},every label quotes/.append style={below}]
+                \node(l){l};
+                \node(a)[right of=l]{a};
+                \node(d)[right of=a]{d};
+                \node(i)[fillhighlight, right of=d]{i};
+                \node(y)[right of=i]{y};
+                \node also["$f^{A1}$"] (l);
+                \node also["$h^{A2}$"] (a);
+                \node also["$l^{A3}$"] (d);
+                \node also["$lq^{A5}$"] (i);
+                \node also["$m^{A4}$"] (y);
+            \end{tikzpicture}};
+
+            \node(lady!)[anchor=east] at (1,1) {\begin{tikzpicture}[every node/.style={bigletter},every label quotes/.style={below}]
+                \node(l){l};
+                \node(a)[right of=l]{a};
+                \node(d)[right of=a]{d};
+                \node(y)[right of=d]{y};
+                \node(!)[fillhighlight, right of=y]{!};
+                \node also["$f^{A1}$"] (l);
+                \node also["$h^{A2}$"] (a);
+                \node also["$l^{A3}$"] (d);
+                \node also["$m^{A4}$"] (y);
+                \node also["$t^{B1}$"] (!);
+            \end{tikzpicture}};
+
+            \graph {
+                (ladiy.north) -> (ladiy!.west),
+                (lady!.north) -> (ladiy!.east)
+            };
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactitemize}
+            \item \textbf{\emph{Logoot} sans suppression} synchronisé par différences d'états
+            \begin{compactitemize}
+                \item union des ensembles de pairs valeur-position
+            \end{compactitemize}
+            \item valeur supprimée $\cong$ valeur qui n'a pas encore été insérée
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Contribution~: séquence synchronisée par différences}
+    \begin{minipage}[c][.55\textheight][t]{0.62\textwidth}
+        \centering
+        \begin{tikzpicture}[
+            x={(.866cm,.5cm)}, y={(-.866cm,.5cm)}, z={(0cm,.63cm)},
+            scale=2.5,
+            every node/.style={compact,minimum height=5mm,minimum width=5mm,font=\ttfamily},
+        ]
+            \node(000) at (0,0,0) {y};
+            \node(100) at (1,0,0) {!};
+            \node(010)[fillhighlight on=<1>] at (0,1,0) {lady};
+            \node(110)[opacity=.7,fillhighlight on=<2>] at (1,1,0) {lady!};
+            \node(001) at (0,0,1) {\st{y}};
+            \node(011) at (0,1,1) {lad\st{y}};
+            \node(101) at (1,0,1) {\st{y}!};
+            \node(111)[fillhighlight on=<3>] at (1,1,1) {lad\st{y}!};
+            \graph[nodes={opacity=.7}]{
+                (100) ->[opacity=.4] (110),
+                (010) ->[opacity=.4,on={<2-3>}{very thick,opacity=1,"1" sloped}] (110),
+                (110) ->[opacity=.4,on={<3>}{very thick,opacity=1,"2" sloped}] (111),
+                (000) -> (100),
+                (000) -> (010),
+                (000) -> (001),
+                (100) -> (101),
+                (010) -> (011),
+                (001) -> (101),
+                (001) -> (011),
+                (101) -> (111),
+                (011) -> (111),
+            };
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}[c][.55\textheight][t]{0.26\textwidth}
+        \vspace{3em}
+        \begin{compactenumerate}
+            \item intègre \texttt{\textquotesingle!\textquotesingle}
+            \item intègre \texttt{\textquotesingle\st{y}\textquotesingle}
+        \end{compactenumerate}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactitemize}
+            \item deux états irréductibles pour chaque couple caractère-position
+            \begin{compactitemize}
+                \item un qui représente la présence du couple
+                \item un qui représente la suppression du couple
+                \item le premier est plus petit que le second
+            \end{compactitemize}
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Contribution~: Logoot synchronisé par différences}
+    \begin{minipage}[c][.6\textheight][t]{\textwidth}
+        \begin{tikzpicture}[x=\textwidth,y=-2.7cm]
+            \node(ladi!)[
+                "$\set*{A1, A2, A3, \textbf{A4}, A5, B1}$",
+            ] at (.5,0) {\begin{tikzpicture}[every node/.style={bigletter},every label quotes/.style={below,align=center}]
+                \node(l){l};
+                \node(a)[right of=l]{a};
+                \node(d)[right of=a]{d};
+                \node(i)[fillhighlight, right of=d]{i};
+                \node(!)[fillhighlight, right of=i]{!};
+                \node also["$f^{A1}$"] (l);
+                \node also["$h^{A2}$"] (a);
+                \node also["$l^{A3}$"] (d);
+                \node also["$lq^{A5}$"] (i);
+                \node also["$t^{B1}$"] (!);
+            \end{tikzpicture}};
+
+            \node(ladi)[
+                anchor=west,
+                "$\set*{A1, A2, A3, \textbf{A4}, A5}$" {name={ladi label}},
+            ] at (0,1) {\begin{tikzpicture}[every node/.style={bigletter},every label quotes/.append style={below}]
+                \node(l){l};
+                \node(a)[right of=l]{a};
+                \node(d)[right of=a]{d};
+                \node(i)[fillhighlight, right of=d]{i};
+                \node also["$f^{A1}$"] (l);
+                \node also["$h^{A2}$"] (a);
+                \node also["$l^{A3}$"] (d);
+                \node also["$lq^{A5}$"] (i);
+            \end{tikzpicture}};
+
+            \node(lady!)[
+                anchor=east,
+                "$\set*{A1, A2, A3, \textbf{A4}, B1}$" {name={lady! label}},
+            ] at (1,1) {\begin{tikzpicture}[every node/.style={bigletter},every label quotes/.style={below}]
+                \node(l){l};
+                \node(a)[right of=l]{a};
+                \node(d)[right of=a]{d};
+                \node(y)[right of=d]{y};
+                \node(!)[fillhighlight, right of=y]{!};
+                \node also["$f^{A1}$"] (l);
+                \node also["$h^{A2}$"] (a);
+                \node also["$l^{A3}$"] (d);
+                \node also["$m^{\textbf{A4}}$"] (y);
+                \node also["$t^{B1}$"] (!);
+            \end{tikzpicture}};
+
+            \graph {
+                (ladi label.north) -> (ladi!.west),
+                (lady! label.north) -> (ladi!.east)
+            };
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}[t]{\textwidth}
+        \begin{compactitemize}
+            \item état ~:
+            \begin{compactitemize}
+                \item l'ensemble des valeurs et leurs positions
+                \item l'ensemble des identifiants des valeurs insérées
+            \end{compactitemize}
+            \item le deuxième ensemble évite la réinsertion d'une valeur déjà insérée
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Résumé des contributions}
+    \begin{compactitemize}
+        \item contributions
+        \begin{compactitemize}
+            \item \textbf{formalisation des séquences} à positions densément ordonnées
+            \item synchronisation par différences d'état de ces séquences (e.g.\ \emph{Logoot})
+            \item nouvelle structure de positions~: \textbf{Dotted LogootSplit}
+            \begin{compactitemize}
+                \item \textbf{optimisée} pour la synchronisation par différences d'états
+                \item \textbf{positions agrégeables} pour former des blocs
+                \item occupent moins d'espace mémoire que les positions LogootSplit
+            \end{compactitemize}
+        \end{compactitemize}
+        \item notre approche
+        \begin{compactitemize}
+            \item \textbf{résiste} mieux aux \textbf{aléas du réseau}
+            \item peut être appliquée à plusieurs séquences répliquées
+            \item implémentée\singlefootnote{\url{https://github.com/coast-team/dotted-logootsplit}} et testée en conditions réelles
+        \end{compactitemize}
+    \end{compactitemize}
+\end{frame}
+

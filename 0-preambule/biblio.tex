@@ -1,0 +1,24 @@
+\usepackage[backend=biber,defernumbers=true,bibstyle=trad-plain,citestyle=authortitle,sorting=none,maxbibnames=1,maxcitenames=1]{biblatex}
+
+\addbibresource{references/bft.bib}
+\addbibresource{references/collaborative.bib}
+\addbibresource{references/consistency.bib}
+\addbibresource{references/crdt.bib}
+\addbibresource{references/general.bib}
+\addbibresource{references/publications.bib}
+
+\AtBeginBibliography{\footnotesize}
+\setbeamertemplate{bibliography item}[text] % use ref number in bibliography
+
+\renewcommand{\thefootnote}{[\arabic{footnote}]}
+    % Footnote style: [footnote-counter]
+
+\newcommand\singlefootnote[1]{%
+    % Use this footnote variant when a single footnote is on the page
+    % Footnote style: *
+    \begingroup
+    %\renewcommand\thefootnote{}\footnote{#1}%
+    \renewcommand{\thefootnote}{*}\footnote{#1}%
+    \addtocounter{footnote}{-1}%
+    \endgroup
+}

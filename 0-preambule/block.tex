@@ -1,0 +1,12 @@
+% map defaulf block to oldblock
+\let\oldblock\block
+\let\endoldblock\endblock
+
+% change block by adding smallskip
+\renewenvironment{block}[1]
+    {\begin{oldblock}{#1}
+        \smallskip
+    }
+    { 
+    \end{oldblock}
+    }

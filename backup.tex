@@ -1,0 +1,350 @@
+\begin{frame}[plain,standout]
+    Transparents supplémentaires
+\end{frame}
+
+
+\begin{frame}{Contribution~: Stabilité}
+    % \begin{minipage}[c][.33\textheight][t]{\textwidth}
+    %     \begin{tikzpicture}[x=1.3cm,y=.8cm,every node/.style={compact}]
+    %         \node at (0,.9) {};
+    %         \node["Alice" username] at (-1,0) {
+    %             \includegraphics[scale=.35]{collab/device.pdf}
+    %         };
+    %         \node(a1)[stable] at (0,0) {$a_1$};
+    %         \node(a2)[on={<7>}{stable}] at (1,0) {$a_2$};
+    %         \node<2->(b1)[on={<6-7>}{stable}] at (2,-1) {$b_1$};
+    %         \node<7->(a3)[stable] at (3,0) {$a_3$};
+    %         \node<7->(b2)[stable] at (4,0) {$b_2$};
+    %         \path<2-4> (b1.east) node[anchor=west]{\Large\color{valid} \checkmark};
+    %         \path<5> (b1.east) node[anchor=west]{\color{invalid} \xmark};
+    %         \graph {
+    %             (a1) -> (a2)
+    %         };
+    %         \only<2>{
+    %             \graph{
+    %                 (a2) -> (b1)
+    %             };
+    %         }
+    %         \only<3,6->{
+    %             \graph{
+    %                 (a1) -> (b1)
+    %             };
+    %         }
+    %         \only<4>{
+    %             \graph{
+    %                 (a1) -> (b1)
+    %             };
+    %         }
+    %         \only<7>{
+    %             \graph{
+    %                 {(a2), (b1)} -> (a3) -> (b2)
+    %             };
+    %         }
+    %     \end{tikzpicture}
+    % \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{definition}
+            modification stable $\iff$ dépendance de toute modification ultérieurement \textbf{acceptée} dans le journal.
+        \end{definition}
+        \vspace{1em}
+        \begin{compactitemize}
+            \item primitive pour définir quelles modifications peuvent être supprimées
+            \item ensemble de dépendances communes qui croît
+            \begin{compactitemize}
+                \item nécessité de \textbf{limiter les concurrences} à l'aide d'invariants
+                \item le protocole garantit les invariants
+            \end{compactitemize}
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Jounal \acf{VFJC} dynamique}
+    \begin{block}{Invariants}
+        \begin{compactenumerate}
+            \item {\transparent{.6}une modification du possesseur du journal dépend des précédentes}
+            \item {\transparent{.6}ordre linéaire des modification de chaque pair honnête}
+            \item {\transparent{.6}une modification dépend directement de modifications présumées linéaires}
+            \item {\transparent{.6}les modification d'un pair dépendent de son invitation}
+            \item l'auteur de chaque dépendance directe d'une modification est connu dans chacune des dépendances directes
+        \end{compactenumerate}
+    \end{block}
+\end{frame}
+
+
+\begin{frame}{Stabilité \acf{VFJC} dynamique}
+    \begin{theorem}
+        modification $x$ stable $\iff$ pour toute \textbf{énumération} $p_1, \dotsc, p_N$ des pairs avec $p_N$ le possesseur du journal, il existe une chaîne de dépendances $x, x_1, \dotsc, x_n$ ($n \leq N$) telle que $x_i$ a pour auteur, reconnaît malintentionné, ou invite $p_i$. Si $N \neq n$, alors $x_n$ invite $p_n$.
+    \end{theorem}
+\end{frame}
+
+
+% \begin{frame}{Édition collaborative de texte}
+%     \begin{minipage}[c][.48\textheight][t]{\textwidth}
+%         \centering
+%         \begin{tikzpicture}[x=\textwidth,every node/.style={inner xsep=0}]
+%             \node(A)["\scriptsize Alice",anchor=west] at (0,0) {%
+%                 \includegraphics<1-2>[width=.4\textwidth]{collab/editor-lady.png}%
+%                 \includegraphics<3>[width=.4\textwidth]{collab/editor-ladi.png}%
+%                 \includegraphics<4-5>[width=.4\textwidth]{collab/editor-ladies.png}%
+%                 \includegraphics<6->[width=.4\textwidth]{collab/editor-ladies!.png}%
+%             };
+%             \node(B)["\scriptsize Bea",anchor=east] at (1,0) {%
+%                 \includegraphics<1>[width=.4\textwidth]{collab/editor.png}%
+%                 \includegraphics<2>[width=.4\textwidth]{collab/editor-lady.png}%
+%                 \includegraphics<3-5>[width=.4\textwidth]{collab/editor-lady!.png}%
+%                 \includegraphics<6->[width=.4\textwidth]{collab/editor-ladies!.png}%
+%             };
+%             \path (A) -- node[midway]{%
+%                 \includegraphics<1,5>[scale=.4]{collab/sync.pdf}
+%             } (B);
+%         \end{tikzpicture}
+%     \end{minipage}
+%     \begin{minipage}[t]{0.59\textwidth}
+%         \begin{compactenumerate}
+%             \item $\trm{ins}(0, \mathtt{lady})$
+%             \item<3-> $\trm{ins}(3, \mathtt{i})$
+%             \item<3-> $\trm{del}(4)$
+%             \item<4-> $\trm{ins}(4, \mathtt{es})$
+%             \item<6-> \hl<7>{modification de Bea}
+%         \end{compactenumerate}
+%     \end{minipage}
+%     \begin{minipage}[t]{0.39\textwidth}
+%         \begin{compactenumerate}
+%             \item<2-> \hl<7>{modifications de Alice}
+%             \item<3-> $\trm{ins}(4, \mathtt{!})$
+%             \item<6-> \hl<7>{modifications de Alice}
+%         \end{compactenumerate}
+%     \end{minipage}
+% \end{frame}
+
+
+% \begin{frame}{Un défi plus difficile qu'il y paraît\ldots}
+%     \begin{minipage}[c][.48\textheight][t]{\textwidth}
+%         \centering
+%         \begin{tikzpicture}[x=\textwidth,every node/.style={inner xsep=0}]
+%             \node(A)["\scriptsize Alice",anchor=west] at (0,0) {%
+%                 \includegraphics[width=.4\textwidth]{collab/editor-ladi!es.png}%
+%             };
+%             \node(B)["\scriptsize Bea",anchor=east] at (1,0) {%
+%                 \includegraphics[width=.4\textwidth]{collab/editor-ladies!.png}%
+%             };
+%         \end{tikzpicture}
+%     \end{minipage}
+%     \begin{minipage}[t]{0.59\textwidth}
+%         \begin{compactenumerate}
+%             \item $\trm{ins}(0, \mathtt{lady})$
+%             \item $\trm{ins}(3, \mathtt{i})$
+%             \item $\trm{del}(4)$
+%             \item $\trm{ins}(4, \mathtt{es})$
+%             \item \hl{$\trm{ins}(4, \mathtt{!})$}
+%         \end{compactenumerate}
+%     \end{minipage}
+%     \begin{minipage}[t]{0.39\textwidth}
+%         \begin{compactenumerate}
+%             \item \hl{$\trm{ins}(0, \mathtt{lady})$}
+%             \item $\trm{ins}(4, \mathtt{!})$
+%             \item \hl{$\trm{ins}(3, \mathtt{i})$}
+%             \item \hl{$\trm{del}(4)$}
+%             \item \hl{$\trm{ins}(4, \mathtt{es})$}
+%         \end{compactenumerate}
+%     \end{minipage}
+% \end{frame}
+
+
+% \begin{frame}{Moteur de réplication}
+%     \begin{minipage}[c][.48\textheight][t]{\textwidth}
+%         \centering
+%         \begin{tikzpicture}[x=1.7cm,y=.5cm,
+%                 every node/.style={anchor=west},
+%                 unit/.style={rectangle,draw,align=center,minimum height=34pt,fill=white},
+%             ]
+%             \path (0,0)
+%                     node(user) {\includegraphics[height=24pt]{collab/user.pdf}}
+%                 (user.east) ++(1,0)
+%                     node(crdt) [unit] {CRDT}
+%                 (crdt.north) ++(0,1) coordinate(crdtTop)
+%                 (crdt.east) ++(1,0)
+%                     node(sync) [unit,text width=2.5cm] {couche de synchronisation}
+%                 (sync.north) ++(0,1) coordinate(syncTop)
+%                 (sync.east) ++(1,0)
+%                     node(net) {\includegraphics[height=24pt]{collab/net.pdf}};
+%             \only<1>{
+%                 \node(engine)[draw,rectangle,fill=white,inner sep=.6cm,fit=(crdt)(crdtTop)(sync)]{Moteur de réplication};
+%                 \graph{
+%                     (user.25) -> (engine.west |- user.25),
+%                     (engine.west |- user.-25) -> (user.-25),
+%                     (net.160) -> (engine.east |- net.160),
+%                     (engine.east |- net.-160) -> (net.-160)
+%                 };
+%             }
+%             \only<2>{
+%                 \node[draw,rectangle,dashed,inner sep=.6cm,fit=(crdt)(crdtTop)(sync)]{};
+%                 \graph{
+%                     (user.25) -> (crdt.west |- user.25),
+%                     (crdt.west |- user.-25) -> (user.-25),
+%                     (net.160) -> (sync.east |- net.160),
+%                     (sync.east |- net.-160) -> (net.-160),
+%                     (crdt) ->["\scriptsize génére", "\scriptsize messages" below] (sync),
+%                     (sync.north) -- (syncTop) --["\scriptsize intègre messages reçus"'] (crdtTop) -> (crdt.north),
+%                 };
+%             }
+%         \end{tikzpicture}
+%     \end{minipage}
+%     \begin{minipage}[t]{\textwidth}
+%         \begin{compactitemize}
+%             \item responsable de la convergence des copies
+%             \begin{compactenumerate}
+%                 \item exécute des opérations de modification ($\trm{ins}$, $\trm{del}$) et de lecture
+%                 \item envoie et reçoit des \textbf{messages de synchronisation}
+%             \end{compactenumerate}
+%             \item \acf{CRDT}
+%             \begin{compactitemize}
+%                 \item autorise les modifications concurrentes
+%                 \item deux pairs qui intègrent les mêmes modifications convergent
+%             \end{compactitemize}
+%         \end{compactitemize}
+%     \end{minipage}
+% \end{frame}
+
+
+\begin{frame}{Logoot\footcite{weiss_2009_logoot}}
+    \begin{tikzpicture}[x=\textwidth,y=2.5cm]
+        \node[
+            anchor=north west,
+            "Alice" {username,above}
+        ] {\begin{tikzpicture}[x=\lettersize,every node/.style={letter}]
+            \node(l){l};
+            \node(a)[right=of l]{a};
+            \node(d)[right=of a]{d};
+            \node<2->(i)[fillhighlight on=<2>,right=of d] {i};
+            \node<1>(y)[right=of d]{y};
+            \node<2>(y)[right=of i]{y};
+            \node<4->(e)[fillhighlight on=<4>,right=of i]{e};
+            \node<4->(s)[fillhighlight on=<4>,right=of e]{s};
+            \node<5,8>(!)[fillhighlight,right=of s]{!};;
+            \node<1-4,6-7>[transparent] at (6,0) {};
+            \node<1-6> also["$f$"](l);
+            \node<7-> also["$f^{A1}$"](l);
+            \node<1-6> also["$h$"](a);
+            \node<7-> also["$h^{A2}$"](a);
+            \node<1-6> also["$l$"](d);
+            \node<7-> also["$l^{A3}$"](d);
+            \node<2-6> also["$lq$" {below, name=j}](i);
+            \node<7-> also["$l^Aq^{A5}$" {yshift=-.5cm}](i);
+            \node<1-2> also["$m$"](y);
+            \node<4-5> also["$p$"](e);
+            \node<6> also["\hl{$m$}"](e);
+            \node<7-> also["$m^{A6}$"](e);
+            \node<4-5> also["$r$"](s);
+            \node<6> also["\hl{$t$}"](s);
+            \node<7-> also["$t^{A7}$"](s);
+            \node<5> also["$t$"](!);
+            \node<8> also["$t^{B1}$"](!);
+        \end{tikzpicture}};
+
+        \node(ALog)[anchor=north west] at (0,-1) {\begin{tikzpicture}[
+                x=1.4cm,
+                y=-1.6em,,
+                every edge quotes/.append style={font=\scriptsize},
+            ]
+            \only<2->{
+                \node(i1)[anchor=east] at (0,0) {$\trm{ins}(3, \mathtt{i})$};
+                \node(i2)[anchor=west] at (1,0) {$\tuple*{\trm{ins}, \alt<7->{l^Aq^{A5}}{lq}, \mathtt{i}}$};
+                \graph {
+                    (i1) ->["génére"] (i2)
+                };
+            } \only<3->{
+                \node(y1)[anchor=east] at (0,1) {$\trm{del}(4)$};
+                \node(y2)[anchor=west] at (1,1) {$\tuple*{\trm{del}, \alt<7->{m^{A6}}{m}}$};
+                \graph {
+                    (y1) ->["génére"] (y2)
+                };
+            } \only<4-5>{
+                \node(e1)[anchor=east] at (0,2) {$\trm{ins}(4, \mathtt{e})$};
+                \node(e2)[anchor=west] at (1,2) {$\tuple*{\trm{ins}, p, \mathtt{e}}$};
+                \graph {
+                    (e1) ->["génére"] (e2)
+                };
+            } \visible<6->{
+                \node(e1)[anchor=east] at (0,2) {$\trm{ins}(4, \mathtt{e})$};
+                \node(e2)[anchor=west] at (1,2) {$\tuple*{\trm{ins}, \alt<7->{m^{A6}}{m}, \mathtt{e}}$};
+                \graph {
+                    (e1) ->["génére"] (e2)
+                };
+            } \only<4-5>{
+                \node(s1)[anchor=east] at (0,3) {$\trm{ins}(5, \mathtt{s})$};
+                \node(s2)[anchor=west] at (1,3) {$\tuple*{\trm{ins}, r, \mathtt{s}}$};
+                \graph {
+                    (s1) ->["génére"] (s2)
+                };
+            } \only<5,8->{
+                \node[anchor=east] at (0,4) {intègre};
+                \node[anchor=west] at (0,4) {$\tuple*{\trm{ins}, \alt<8>{t^{B1}}{t}, \mathtt{!}}$};
+            } \only<6->{
+                \node(s1)[anchor=east] at (0,3) {$\trm{ins}(5, \mathtt{s})$};
+                \node(s2)[anchor=west] at (1,3) {$\tuple*{\trm{ins}, \alt<7->{t^{A7}}{t}, \mathtt{s}}$};
+                \graph {
+                    (s1) ->["génére"] (s2)
+                };
+            }
+        \end{tikzpicture}};
+
+        \node(B)[
+            anchor=north east,
+            "Bea" {username,above}
+        ] at (1,0) {\begin{tikzpicture}[x=\lettersize,every node/.style={letter}]
+            \node(l){l};
+            \node(a)[right=of l]{a};
+            \node(d)[right=of a]{d};
+            \node<1-4,6-7>(y)[right=of d]{y};
+            \node<2-4,6,7>(!)[fillhighlight on=<2>,right=of y]{!};
+            \node<5,8>(i)[fillhighlight,right=of d]{i};
+            \node<5,8>(e)[fillhighlight,right=of i]{e};;
+            \node<5,8>(s)[fillhighlight,right=of e]{s};
+            \node<5,8>(!)[right=of s]{!};
+            \node<1-4,6-7>[transparent] at (6,0) {};
+            \node<1-6> also["$f$"](l);
+            \node<7-> also["$f^{A1}$"](l);
+            \node<1-6> also["$h$"](a);
+            \node<7-> also["$h^{A2}$"](a);
+            \node<1-6> also["$l$"](d);
+            \node<7-> also["$l^{A3}$"](d);
+            \node<5> also["$lq$"](i);
+            \node<8> also["$l^Aq^{A5}$" {yshift=-.5cm}](i);
+            \node<1-4> also["$m$"](y);
+            \node<6> also["\hl{$m$}"](y);
+            \node<7> also["$m^{A4}$"](y);
+            \node<5> also["$p$"](e);
+            \node<8> also["$m^{A6}$"](e);
+            \node<5> also["$r$"](s);
+            \node<8> also["$t^{A7}$"](s);
+            \node<2-5> also["$t$"](!);
+            \node<6> also["\hl{$t$}"](!);
+            \node<7-> also["$t^{B1}$"](!);
+        \end{tikzpicture}};
+
+        \node[anchor=north west] at (ALog.north -| B.west) {\begin{tikzpicture}[
+                x=1.4cm,
+                y=-1.6em,
+                every edge quotes/.append style={font=\scriptsize},
+            ]
+            \only<2->{
+                \node(excl1)[anchor=east] at (0,0) {$\trm{ins}(4, \mathtt{!})$};
+                \node(excl2)[anchor=west] at (1,0) {$\tuple*{\trm{ins}, \alt<7->{t^{B1}}{t}, \mathtt{!}}$};
+                \graph{
+                    (excl1) ->["génére"] (excl2)
+                };
+            } \only<5,8>{
+                \node[anchor=east] at (0,1) {intègre};
+                \node[anchor=west] at (0,1) {$\tuple*{\trm{ins}, \alt<8>{l^Aq^{A5}}{lq}, \mathtt{i}}$};
+                \node[anchor=east] at (0,2) {intègre};
+                \node[anchor=west] at (0,2) {$\tuple*{\trm{del}, \alt<8>{m^{A4}}{m}}$};
+                \node[anchor=east] at (0,3) {intègre};
+                \node[anchor=west] at (0,3) {$\tuple*{\trm{ins}, \alt<8>{m^{A6}}{p}, \mathtt{e}}$};
+                \node[anchor=east] at (0,4) {intègre};
+                \node[anchor=west] at (0,4) {intègre $\tuple*{\trm{ins}, \alt<8>{t^{A7}}{r}, \mathtt{s}}$};
+            }
+        \end{tikzpicture}};
+    \end{tikzpicture}
+\end{frame}

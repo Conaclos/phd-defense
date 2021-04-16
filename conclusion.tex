@@ -1,0 +1,108 @@
+\begin{frame}[plain,standout]
+    Synthèse
+\end{frame}
+
+
+\begin{frame}{Synthèse}
+    \begin{compactitemize}
+        \item sécurité et passage à l'échelle des collaborations pair-à-pair
+    \end{compactitemize}
+    \textbf{Protection de la convergence}
+    \begin{compactitemize}
+        \item formalisation du concept de stabilité
+        \item protocole à journaux complets et à journaux tronqués
+        \begin{compactitemize}
+            \item tolère la présence de pairs malintentionnés
+            \item adapté aux groupes dynamiques
+            \item sans aucune coordination
+        \end{compactitemize}
+    \end{compactitemize}
+    \textbf{Co-édition massive de texte}
+    \begin{compactitemize}
+        \item formalisation des séquences à positions densément ordonnées
+        \item synchronisation de séquences par différences d'états
+        \begin{compactitemize}
+            \item résiste mieux aux aléas du réseau
+        \end{compactitemize}
+        \item nouvelle structure de positions~: Dotted LogootSplit
+    \end{compactitemize}
+\end{frame}
+
+
+\begin{frame}{Perspectives}
+    \begin{compactitemize}
+        \item les pairs inactifs ou non-coopératifs peuvent bloquer la troncature
+        \begin{compactitemize}
+            \item évincer les pairs inactifs ou non-coopératifs
+            \item stabilité au sein de sous-groupes
+        \end{compactitemize}
+        \item la synchronisation par différences d'états est flexible
+        \begin{compactitemize}
+            \item questionne les \textbf{stratégies de synchronisation à adopter}
+        \end{compactitemize}
+    \end{compactitemize}
+\end{frame}
+
+
+\begin{frame}{Ouverture~: CRDTs sûrs par conception}
+    \begin{minipage}[c][.6\textheight][t]{\textwidth}
+        \centering
+        \begin{tikzpicture}
+                \newcommand*\sep{1.5}
+                \newcommand*\ang{-20}
+                % devices
+                \path (0,0)
+                +(\ang+120*2:\sep) node[
+                    "Alice" below,
+                ](A){\includegraphics[scale=0.35]{collab/device.pdf}}
+                +(\ang+120:\sep) node[
+                    "Bea",
+                ](B){\includegraphics[scale=0.35]{collab/device.pdf}}
+                +(\ang:\sep) node[
+                    "Mallory" below
+                ](M){\includegraphics[scale=0.35]{collab/evil-cat.pdf}};
+            \node also [
+                label=left:{\begin{tikzpicture}[every node/.style={bigletter}]
+                    \node(l){l};
+                    \node(a)[right=of l]{a};
+                    \node(d)[right=of a]{d};
+                    \node(y)[right=of d]{y};
+                    \node(z)[fillhighlight,visible on=<2>,right=of y]{z};
+                    \node also["$f^{A1}$"](l);
+                    \node also["$h^{A2}$"](a);
+                    \node also["$l^{A3}$"](d);
+                    \node also["$m^{A4}$"](y);
+                    \node<2> also["$r^{M1}$"](z);
+                \end{tikzpicture}},
+            ] (A);
+            \node also [
+                label=left:{\begin{tikzpicture}[every node/.style={bigletter}]
+                    \node(l){l};
+                    \node(a)[right=of l]{a};
+                    \node(d)[right=of a]{d};
+                    \node(y)[right=of d]{y};
+                    \node(x)[fillhighlight,visible on=<2>,right=of y]{x};
+                    \node also["$f^{A1}$"](l);
+                    \node also["$h^{A2}$"](a);
+                    \node also["$l^{A3}$"](d);
+                    \node also["$m^{A4}$"](y);
+                    \node<2> also["$r^{M1}$"](x);
+                \end{tikzpicture}},
+            ] (B);
+            % Logs
+            % Links
+            \draw[link] (A) -- node[midway]{\includegraphics<2 | handout:0>[scale=0.4]{collab/sync.pdf}} (B);
+            \draw<1>[link,->] (M) -> node[pos=.33]{\tikz\pic[fill=pumpkin]{triangle};} (A);
+            \draw<1>[link,->] (M) -> node[pos=.33]{\tikz\pic[fill=pumpkin]{trapeze};} (B);
+            \draw<2- | handout:0>[link] (M) -- (A);
+            \draw<2- | handout:0>[link] (M) -- (B);
+        \end{tikzpicture}
+    \end{minipage}
+    \begin{minipage}{\textwidth}
+        \begin{compactitemize}
+            \item les CRDTs utilisent des \textbf{identifiants pour distinguer des valeurs}
+            \item un pair malintentionné peut associer à un \textbf{même identifiant des valeurs distinctes}
+        \end{compactitemize}
+    \end{minipage}
+\end{frame}
+

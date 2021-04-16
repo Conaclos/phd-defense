@@ -1,0 +1,11 @@
+\newenvironment{compactitemize}{%
+\settowidth{\leftmargini}{\usebeamertemplate{itemize item}}%
+\addtolength{\leftmargini}{\labelsep}%
+\begin{itemize}%
+}{\end{itemize}}
+
+\newenvironment{compactenumerate}{%
+\settowidth{\leftmargini}{\usebeamertemplate{enumerate item}}%
+\addtolength{\leftmargini}{\labelsep}%
+\begin{enumerate}%
+}{\end{enumerate}}
